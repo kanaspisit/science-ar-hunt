@@ -1,40 +1,170 @@
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  </head>
-  <body>
-    <a-scene
-      mindar-image="imageTargetSrc: ./targets.mind;"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false">
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-      <a-camera
-        position="0 0 0"
-        look-controls="enabled: false">
-      </a-camera>
+  <!-- ใช้เวอร์ชันเดียวกับตัวอย่างทางการของ MindAR 1.2.5 -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-plane
-          color="#7c3aed"
-          opacity="0.85"
-          position="0 0 0"
-          height="0.552"
-          width="1">
-        </a-plane>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
 
-        <a-text
-          value="MISSION 01 - GENETICS"
-          color="#ffffff"
-          align="center"
-          width="1.6"
-          position="0 0 0.01">
-        </a-text>
-      </a-entity>
+      /* สำคัญ: ต้องโปร่งใส ไม่ใช้พื้นหลังสีดำ */
+      background: transparent !important;
+    }
 
-    </a-scene>
-  </body>
+    /* ไม่กำหนดขนาด/ตำแหน่ง video เอง
+       ปล่อยให้ MindAR คำนวณอัตราส่วนและตำแหน่งกล้อง */
+    video {
+      background: transparent !important;
+    }
+
+    /* ให้ WebGL canvas โปร่งใสเพื่อเห็น camera feed ด้านหลัง */
+    .a-canvas {
+      background: transparent !important;
+    }
+
+    #statusBox {
+      position: fixed;
+      z-index: 99999;
+      top: max(14px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 540px;
+      box-sizing: border-box;
+      padding: 11px 14px;
+      border-radius: 15px;
+      background: rgba(15, 23, 42, 0.78);
+      color: white;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+
+    #statusTitle {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    #statusText {
+      margin-top: 3px;
+      font-size: 13px;
+      opacity: .92;
+    }
+
+    #debug {
+      margin-top: 4px;
+      font-size: 11px;
+      opacity: .68;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="statusBox">
+    <div id="statusTitle">กำลังเริ่ม AR...</div>
+    <div id="statusText">โปรดอนุญาตการใช้กล้อง</div>
+    <div id="debug">กำลังตรวจสอบ targets.mind</div>
+  </div>
+
+  <a-scene
+    id="arScene"
+    mindar-image="imageTargetSrc: ./targets.mind;"
+    background="transparent: true"
+    renderer="alpha: true; colorManagement: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
+
+    <a-entity
+      id="mission01Target"
+      mindar-image-target="targetIndex: 0">
+
+      <a-plane
+        color="#7c3aed"
+        opacity="0.88"
+        transparent="true"
+        width="1"
+        height="0.56"
+        position="0 0 0.01">
+      </a-plane>
+
+      <a-text
+        value="MISSION 01"
+        color="#ffffff"
+        align="center"
+        width="1.7"
+        position="0 0.08 0.03">
+      </a-text>
+
+      <a-text
+        value="GENETICS"
+        color="#ffffff"
+        align="center"
+        width="1.35"
+        position="0 -0.09 0.03">
+      </a-text>
+
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const scene = document.querySelector("#arScene");
+      const target = document.querySelector("#mission01Target");
+      const title = document.querySelector("#statusTitle");
+      const text = document.querySelector("#statusText");
+      const debug = document.querySelector("#debug");
+
+      fetch("./targets.mind", { cache: "no-store" })
+        .then((res) => {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          debug.textContent = "✓ พบไฟล์ targets.mind";
+        })
+        .catch((err) => {
+          title.textContent = "❌ ไม่พบ targets.mind";
+          text.textContent = "ตรวจสอบว่าไฟล์อยู่โฟลเดอร์เดียวกับ index.html";
+          debug.textContent = err.message;
+        });
+
+      scene.addEventListener("arReady", () => {
+        title.textContent = "🔎 กำลังค้นหา MISSION 01";
+        text.textContent = "หันกล้องไปที่ภาพ Mission 01 - Genetics";
+      });
+
+      scene.addEventListener("arError", () => {
+        title.textContent = "⚠️ เปิดกล้องไม่สำเร็จ";
+        text.textContent = "ตรวจสอบสิทธิ์กล้อง แล้วรีเฟรชหน้าเว็บ";
+      });
+
+      target.addEventListener("targetFound", () => {
+        title.textContent = "✅ พบ MISSION 01 แล้ว!";
+        text.textContent = "GENETICS — Image Tracking ทำงานถูกต้อง";
+      });
+
+      target.addEventListener("targetLost", () => {
+        title.textContent = "🔎 กำลังค้นหา MISSION 01";
+        text.textContent = "เล็งกล้องกลับไปที่ภาพ Mission 01 - Genetics";
+      });
+    });
+  </script>
+
+</body>
 </html>
