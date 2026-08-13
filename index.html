@@ -5,7 +5,6 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-  <!-- ใช้เวอร์ชันเดียวกับตัวอย่างทางการของ MindAR 1.2.5 -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
@@ -16,22 +15,15 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      background: transparent !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
 
-      /* สำคัญ: ต้องโปร่งใส ไม่ใช้พื้นหลังสีดำ */
+    video, .a-canvas {
       background: transparent !important;
     }
 
-    /* ไม่กำหนดขนาด/ตำแหน่ง video เอง
-       ปล่อยให้ MindAR คำนวณอัตราส่วนและตำแหน่งกล้อง */
-    video {
-      background: transparent !important;
-    }
-
-    /* ให้ WebGL canvas โปร่งใสเพื่อเห็น camera feed ด้านหลัง */
-    .a-canvas {
-      background: transparent !important;
-    }
-
+    /* แถบสถานะด้านบน */
     #statusBox {
       position: fixed;
       z-index: 99999;
@@ -39,22 +31,21 @@
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 28px);
-      max-width: 540px;
+      max-width: 560px;
       box-sizing: border-box;
       padding: 11px 14px;
-      border-radius: 15px;
-      background: rgba(15, 23, 42, 0.78);
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.80);
       color: white;
       text-align: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(9px);
+      -webkit-backdrop-filter: blur(9px);
       pointer-events: none;
     }
 
     #statusTitle {
       font-size: 17px;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     #statusText {
@@ -63,10 +54,147 @@
       opacity: .92;
     }
 
-    #debug {
-      margin-top: 4px;
+    /* คะแนน */
+    #scoreBox {
+      position: fixed;
+      z-index: 99999;
+      top: max(100px, calc(env(safe-area-inset-top) + 88px));
+      right: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      color: #4c1d95;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    }
+
+    /* กล่องคำถาม */
+    #quizOverlay {
+      display: none;
+      position: fixed;
+      z-index: 100000;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding:
+        16px
+        16px
+        max(18px, calc(env(safe-area-inset-bottom) + 12px));
+      box-sizing: border-box;
+      background: linear-gradient(
+        to top,
+        rgba(15,23,42,.98) 0%,
+        rgba(30,41,59,.95) 75%,
+        rgba(30,41,59,.15) 100%
+      );
+      color: white;
+    }
+
+    .quizCard {
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      background: rgba(255,255,255,.97);
+      color: #0f172a;
+      border-radius: 22px;
+      padding: 18px;
+      box-sizing: border-box;
+      box-shadow: 0 16px 50px rgba(0,0,0,.30);
+    }
+
+    .missionTag {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #ede9fe;
+      color: #6d28d9;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .3px;
+      margin-bottom: 10px;
+    }
+
+    #question {
+      font-size: 19px;
+      line-height: 1.45;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .answerBtn {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 14px;
+      margin-top: 9px;
+      background: #f1f5f9;
+      color: #0f172a;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .answerBtn:active {
+      transform: scale(.985);
+    }
+
+    #feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    #completeBox {
+      display: none;
+      text-align: center;
+      padding: 6px 0 2px;
+    }
+
+    #completeBox .big {
+      font-size: 32px;
+      margin-bottom: 6px;
+    }
+
+    #completeBox h2 {
+      margin: 4px 0;
+      color: #5b21b6;
+    }
+
+    #completeBox p {
+      margin: 6px 0;
+      color: #475569;
+    }
+
+    #continueBtn {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 18px;
+      margin-top: 12px;
+      width: 100%;
+      background: #6d28d9;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* ปุ่มรีเซ็ตไว้ทดสอบ */
+    #resetBtn {
+      position: fixed;
+      z-index: 99999;
+      left: 12px;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      border: 0;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(15,23,42,.65);
+      color: rgba(255,255,255,.72);
       font-size: 11px;
-      opacity: .68;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -76,8 +204,37 @@
   <div id="statusBox">
     <div id="statusTitle">กำลังเริ่ม AR...</div>
     <div id="statusText">โปรดอนุญาตการใช้กล้อง</div>
-    <div id="debug">กำลังตรวจสอบ targets.mind</div>
   </div>
+
+  <div id="scoreBox">⭐ <span id="score">0</span> คะแนน</div>
+
+  <div id="quizOverlay">
+    <div class="quizCard">
+      <div id="quizContent">
+        <div class="missionTag">🧬 MISSION 01 · GENETICS</div>
+        <div id="question">
+          โครงสร้างใดอยู่ภายในนิวเคลียส และประกอบด้วย DNA พันรอบโปรตีน?
+        </div>
+
+        <button class="answerBtn" data-answer="A">A. ยีน</button>
+        <button class="answerBtn" data-answer="B">B. โครโมโซม</button>
+        <button class="answerBtn" data-answer="C">C. ไรโบโซม</button>
+        <button class="answerBtn" data-answer="D">D. เยื่อหุ้มเซลล์</button>
+
+        <div id="feedback"></div>
+      </div>
+
+      <div id="completeBox">
+        <div class="big">🎉🧬</div>
+        <h2>MISSION COMPLETE!</h2>
+        <p>ตอบถูกต้อง — คุณผ่านภารกิจพันธุศาสตร์แล้ว</p>
+        <p><strong>+100 คะแนน</strong></p>
+        <button id="continueBtn">ไปตามหา Mission ต่อไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="resetBtn">รีเซ็ตด่านทดสอบ</button>
 
   <a-scene
     id="arScene"
@@ -96,29 +253,38 @@
       id="mission01Target"
       mindar-image-target="targetIndex: 0">
 
-      <a-plane
+      <!-- AR ที่ลอยเหนือภาพ -->
+      <a-ring
+        color="#a78bfa"
+        radius-inner="0.28"
+        radius-outer="0.33"
+        position="0 0 0.05"
+        animation="
+          property: rotation;
+          to: 0 0 360;
+          dur: 2600;
+          loop: true;
+          easing: linear;">
+      </a-ring>
+
+      <a-octahedron
         color="#7c3aed"
-        opacity="0.88"
-        transparent="true"
-        width="1"
-        height="0.56"
-        position="0 0 0.01">
-      </a-plane>
+        radius="0.16"
+        position="0 0 0.17"
+        animation="
+          property: rotation;
+          to: 0 360 360;
+          dur: 3000;
+          loop: true;
+          easing: linear;">
+      </a-octahedron>
 
       <a-text
-        value="MISSION 01"
+        value="GENETICS FOUND!"
         color="#ffffff"
         align="center"
-        width="1.7"
-        position="0 0.08 0.03">
-      </a-text>
-
-      <a-text
-        value="GENETICS"
-        color="#ffffff"
-        align="center"
-        width="1.35"
-        position="0 -0.09 0.03">
+        width="1.5"
+        position="0 -0.32 0.08">
       </a-text>
 
     </a-entity>
@@ -129,39 +295,114 @@
     document.addEventListener("DOMContentLoaded", () => {
       const scene = document.querySelector("#arScene");
       const target = document.querySelector("#mission01Target");
-      const title = document.querySelector("#statusTitle");
-      const text = document.querySelector("#statusText");
-      const debug = document.querySelector("#debug");
 
-      fetch("./targets.mind", { cache: "no-store" })
-        .then((res) => {
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          debug.textContent = "✓ พบไฟล์ targets.mind";
-        })
-        .catch((err) => {
-          title.textContent = "❌ ไม่พบ targets.mind";
-          text.textContent = "ตรวจสอบว่าไฟล์อยู่โฟลเดอร์เดียวกับ index.html";
-          debug.textContent = err.message;
-        });
+      const statusTitle = document.querySelector("#statusTitle");
+      const statusText = document.querySelector("#statusText");
+      const quizOverlay = document.querySelector("#quizOverlay");
+      const quizContent = document.querySelector("#quizContent");
+      const completeBox = document.querySelector("#completeBox");
+      const feedback = document.querySelector("#feedback");
+      const scoreEl = document.querySelector("#score");
+      const resetBtn = document.querySelector("#resetBtn");
+      const continueBtn = document.querySelector("#continueBtn");
+
+      let missionUnlocked = false;
+      let completed = localStorage.getItem("mission01Complete") === "true";
+      let score = Number(localStorage.getItem("scienceHuntScore") || 0);
+
+      scoreEl.textContent = score;
 
       scene.addEventListener("arReady", () => {
-        title.textContent = "🔎 กำลังค้นหา MISSION 01";
-        text.textContent = "หันกล้องไปที่ภาพ Mission 01 - Genetics";
+        if (completed) {
+          statusTitle.textContent = "✅ MISSION 01 ผ่านแล้ว";
+          statusText.textContent = "คะแนนของคุณถูกบันทึกไว้ในเครื่องนี้";
+        } else {
+          statusTitle.textContent = "🔎 กำลังค้นหา MISSION 01";
+          statusText.textContent = "หันกล้องไปที่ภาพ Mission 01 - Genetics";
+        }
       });
 
       scene.addEventListener("arError", () => {
-        title.textContent = "⚠️ เปิดกล้องไม่สำเร็จ";
-        text.textContent = "ตรวจสอบสิทธิ์กล้อง แล้วรีเฟรชหน้าเว็บ";
+        statusTitle.textContent = "⚠️ เปิด AR ไม่สำเร็จ";
+        statusText.textContent = "ตรวจสอบสิทธิ์กล้องแล้วรีเฟรชหน้าเว็บ";
       });
 
       target.addEventListener("targetFound", () => {
-        title.textContent = "✅ พบ MISSION 01 แล้ว!";
-        text.textContent = "GENETICS — Image Tracking ทำงานถูกต้อง";
+        missionUnlocked = true;
+
+        if (completed) {
+          statusTitle.textContent = "✅ MISSION 01 COMPLETE";
+          statusText.textContent = "ภารกิจนี้ผ่านแล้ว";
+          showComplete();
+        } else {
+          statusTitle.textContent = "🧬 พบปริศนาพันธุศาสตร์!";
+          statusText.textContent = "เลือกคำตอบด้านล่าง";
+          quizOverlay.style.display = "block";
+        }
       });
 
       target.addEventListener("targetLost", () => {
-        title.textContent = "🔎 กำลังค้นหา MISSION 01";
-        text.textContent = "เล็งกล้องกลับไปที่ภาพ Mission 01 - Genetics";
+        if (!missionUnlocked && !completed) {
+          statusTitle.textContent = "🔎 กำลังค้นหา MISSION 01";
+          statusText.textContent = "เล็งกล้องกลับไปที่ภาพ Genetics";
+        } else if (!completed) {
+          /* ตั้งใจไม่ปิดคำถามเมื่อภาพหลุด เพื่อให้เด็กกดตอบได้สะดวก */
+          statusTitle.textContent = "🧬 MISSION 01 ถูกปลดล็อกแล้ว";
+          statusText.textContent = "ตอบปริศนาด้านล่างได้เลย";
+        }
+      });
+
+      document.querySelectorAll(".answerBtn").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (completed) return;
+
+          const answer = button.dataset.answer;
+
+          if (answer === "B") {
+            feedback.style.display = "block";
+            feedback.style.background = "#dcfce7";
+            feedback.style.color = "#166534";
+            feedback.textContent = "✅ ถูกต้อง! โครโมโซมประกอบด้วย DNA และโปรตีน";
+
+            setTimeout(() => {
+              completed = true;
+              localStorage.setItem("mission01Complete", "true");
+
+              score += 100;
+              localStorage.setItem("scienceHuntScore", String(score));
+              scoreEl.textContent = score;
+
+              showComplete();
+
+              statusTitle.textContent = "🎉 MISSION 01 COMPLETE!";
+              statusText.textContent = "+100 คะแนน · Genetics cleared";
+            }, 650);
+
+          } else {
+            feedback.style.display = "block";
+            feedback.style.background = "#fee2e2";
+            feedback.style.color = "#991b1b";
+            feedback.textContent = "❌ ยังไม่ถูก ลองอีกครั้ง!";
+          }
+        });
+      });
+
+      function showComplete() {
+        quizOverlay.style.display = "block";
+        quizContent.style.display = "none";
+        completeBox.style.display = "block";
+      }
+
+      continueBtn.addEventListener("click", () => {
+        quizOverlay.style.display = "none";
+        statusTitle.textContent = "🔬 ตามหา Mission ต่อไป";
+        statusText.textContent = "ตอนนี้เรายังสร้างไว้เฉพาะ Mission 01";
+      });
+
+      resetBtn.addEventListener("click", () => {
+        localStorage.removeItem("mission01Complete");
+        localStorage.setItem("scienceHuntScore", "0");
+        location.reload();
       });
     });
   </script>
