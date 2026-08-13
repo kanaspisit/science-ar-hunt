@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+
+<a-scene
+  mindar-image="imageTargetSrc: ./targets.mind;"
+  embedded
+  color-space="sRGB"
+  renderer="colorManagement: true;"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
+
+  <a-assets></a-assets>
+
+  <a-camera
+    position="0 0 0"
+    look-controls="enabled: false">
+  </a-camera>
+
+  <a-entity mindar-image-target="targetIndex: 0">
+
+    <a-plane
+      color="#ffffff"
+      opacity="0.92"
+      position="0 0 0"
+      width="1"
+      height="0.55">
+    </a-plane>
+
+    <a-text
+      value="MISSION 01"
+      color="#1a237e"
+      align="center"
+      width="2"
+      position="0 0.12 0.01">
+    </a-text>
+
+    <a-text
+      value="GENETICS LAB"
+      color="#7b1fa2"
+      align="center"
+      width="1.5"
+      position="0 -0.08 0.01">
+    </a-text>
+
+  </a-entity>
+
+</a-scene>
+
+</body>
+</html>
